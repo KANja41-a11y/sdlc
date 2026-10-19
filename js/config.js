@@ -21,7 +21,7 @@ const CONFIG = {
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbz1KadFpTo0RW_EqAlXjThCBedCD3sPJuZ_bHRzF5WFbXkjdtc8wRlLadDtDQcsobHFiA/exec",
 
   // Set true jika sudah deploy Apps Script dan ingin memakai backend
-  USE_BACKEND: false,
+  USE_BACKEND: true,
 
   // Nama aplikasi
   APP_NAME: "SDLC Notes"

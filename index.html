@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catatan Pelajaran SDLC - Software Development Life Cycle</title>
+  <meta name="description" content="Aplikasi interaktif catatan pelajaran SDLC: tahapan, peran, tugas, pertanyaan interview, latihan soal, dan tanya jawab. Siap untuk GitHub Pages.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#beranda" class="nav-logo">
+        <span class="logo-icon">📘</span>
+        <span>SDLC Notes</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="#beranda" class="nav-link active">Beranda</a></li>
+        <li><a href="#tahapan" class="nav-link">Tahapan SDLC</a></li>
+        <li><a href="#peran" class="nav-link">Peran & Interview</a></li>
+        <li><a href="#tugas" class="nav-link">Tugas</a></li>
+        <li><a href="#latihan" class="nav-link">Latihan Soal</a></li>
+        <li><a href="#tanya-jawab" class="nav-link">Tanya Jawab</a></li>
+        <li><a href="#admin" class="nav-link admin-link">Admin</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- BERANDA -->
+    <section id="beranda" class="section hero">
+      <div class="container">
+        <div class="hero-content">
+          <h1>Catatan Pelajaran <span class="highlight">SDLC</span></h1>
+          <p class="hero-subtitle">Software Development Life Cycle — panduan interaktif untuk memahami tahapan, peran, tugas, pertanyaan wawancara kerja, dan latihan soal.</p>
+          <div class="hero-actions">
+            <a href="#tahapan" class="btn btn-primary">Mulai Belajar</a>
+            <a href="#latihan" class="btn btn-secondary">Latihan Soal</a>
+          </div>
+        </div>
+        <div class="hero-cards">
+          <div class="stat-card">
+            <div class="stat-number" id="statStages">7</div>
+            <div class="stat-label">Tahapan SDLC</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="statRoles">8</div>
+            <div class="stat-label">Peran Utama</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="statQuestions">25+</div>
+            <div class="stat-label">Soal Interview</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number" id="statQuiz">15+</div>
+            <div class="stat-label">Latihan Soal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAHAPAN SDLC -->
+    <section id="tahapan" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Tahapan SDLC</h2>
+          <p>Urutan proses terstruktur dalam pengembangan perangkat lunak yang harus ada di nalar setiap petugas SDLC.</p>
+        </div>
+        <div class="timeline" id="timelineContainer">
+          <!-- Diisi oleh JS dari data -->
+        </div>
+        <div class="stage-detail" id="stageDetail">
+          <p class="placeholder">Klik salah satu tahapan di atas untuk melihat detail lengkap, tugas, dan deliverable.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PERAN & INTERVIEW -->
+    <section id="peran" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <h2>Peran & Pihak yang Terlibat</h2>
+          <p>Siapa saja yang bekerja di bagian SDLC, tanggung jawabnya, dan pertanyaan yang biasanya ditanyakan saat job interview.</p>
+        </div>
+        <div class="roles-grid" id="rolesGrid">
+          <!-- Diisi JS -->
+        </div>
+        <div class="role-detail" id="roleDetail" style="display:none;">
+          <!-- Detail peran + interview Q&A -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TUGAS -->
+    <section id="tugas" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Tugas-Tugas yang Harus Dilakukan</h2>
+          <p>Checklist tugas utama di setiap tahapan yang harus dikuasai oleh petugas SDLC.</p>
+        </div>
+        <div class="tasks-container" id="tasksContainer">
+          <!-- Diisi JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- LATIHAN SOAL -->
+    <section id="latihan" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <h2>Latihan Soal Interaktif</h2>
+          <p>Uji pemahamanmu tentang SDLC. Skor akan disimpan (opsional via Google Sheet).</p>
+        </div>
+        <div class="quiz-setup" id="quizSetup">
+          <div class="quiz-options">
+            <label>Jumlah soal:
+              <select id="quizCount">
+                <option value="5">5 Soal</option>
+                <option value="10" selected>10 Soal</option>
+                <option value="15">15 Soal</option>
+              </select>
+            </label>
+            <button class="btn btn-primary" id="startQuizBtn">Mulai Latihan</button>
+          </div>
+        </div>
+        <div class="quiz-area" id="quizArea" style="display:none;">
+          <div class="quiz-progress">
+            <div class="progress-bar"><div class="progress-fill" id="quizProgress"></div></div>
+            <span id="quizCounter">Soal 1 / 10</span>
+          </div>
+          <div class="quiz-question" id="quizQuestion"></div>
+          <div class="quiz-options" id="quizOptions"></div>
+          <div class="quiz-feedback" id="quizFeedback" style="display:none;"></div>
+          <div class="quiz-actions">
+            <button class="btn btn-secondary" id="nextQuizBtn" style="display:none;">Soal Berikutnya</button>
+          </div>
+        </div>
+        <div class="quiz-result" id="quizResult" style="display:none;">
+          <h3>Hasil Latihan</h3>
+          <div class="score-circle" id="scoreCircle">0%</div>
+          <p id="scoreText"></p>
+          <button class="btn btn-primary" id="retryQuizBtn">Coba Lagi</button>
+          <button class="btn btn-secondary" id="saveScoreBtn">Simpan Skor (Opsional)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TANYA JAWAB -->
+    <section id="tanya-jawab" class="section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Tanya Jawab (FAQ)</h2>
+          <p>Pertanyaan yang sering muncul seputar SDLC dan jawaban praktisnya.</p>
+        </div>
+        <div class="faq-list" id="faqList">
+          <!-- Diisi JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin" class="section section-alt">
+      <div class="container">
+        <div class="section-header">
+          <h2>Panel Admin</h2>
+          <p>Kelola konten, lihat statistik pengunjung, dan data latihan. Login diperlukan.</p>
+        </div>
+        <div id="adminLogin" class="admin-login">
+          <div class="login-card">
+            <h3>Login Admin</h3>
+            <p class="hint">Password disimpan aman di Apps Script Properties (bukan di GitHub).</p>
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="adminPassword">Password</label>
+                <input type="password" id="adminPassword" placeholder="Masukkan password admin" required autocomplete="current-password">
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Masuk</button>
+            </form>
+            <p id="loginError" class="error-msg" style="display:none;"></p>
+          </div>
+        </div>
+        <div id="adminPanel" style="display:none;">
+          <div class="admin-header">
+            <h3>Selamat datang, Admin</h3>
+            <button class="btn btn-secondary btn-sm" id="logoutBtn">Keluar</button>
+          </div>
+          <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="stats">Statistik</button>
+            <button class="tab-btn" data-tab="content">Kelola Konten</button>
+            <button class="tab-btn" data-tab="quizzes">Kelola Soal</button>
+            <button class="tab-btn" data-tab="visitors">Pengunjung</button>
+          </div>
+          <div class="tab-content" id="tab-stats">
+            <div class="stats-grid" id="adminStats">
+              <div class="stat-box"><span class="stat-val" id="totalVisitors">-</span><span>Total Kunjungan</span></div>
+              <div class="stat-box"><span class="stat-val" id="totalQuizzes">-</span><span>Latihan Selesai</span></div>
+              <div class="stat-box"><span class="stat-val" id="avgScore">-</span><span>Rata-rata Skor</span></div>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-content" style="display:none;">
+            <div class="crud-header">
+              <h4>Konten Tahapan / Peran</h4>
+              <button class="btn btn-primary btn-sm" id="addContentBtn">+ Tambah</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="contentTable">
+                <thead>
+                  <tr><th>ID</th><th>Tipe</th><th>Judul</th><th>Aksi</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-quizzes" style="display:none;">
+            <div class="crud-header">
+              <h4>Bank Soal Latihan</h4>
+              <button class="btn btn-primary btn-sm" id="addQuizBtn">+ Tambah Soal</button>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table" id="quizTable">
+                <thead>
+                  <tr><th>ID</th><th>Pertanyaan</th><th>Jawaban Benar</th><th>Aksi</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-content" id="tab-visitors" style="display:none;">
+            <div class="table-wrap">
+              <table class="data-table" id="visitorTable">
+                <thead>
+                  <tr><th>Waktu</th><th>Halaman</th><th>User Agent</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal CRUD -->
+  <div class="modal" id="crudModal" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Tambah Data</h3>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <form id="crudForm">
+        <input type="hidden" id="crudId">
+        <input type="hidden" id="crudType">
+        <div id="crudFields"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="modalCancel">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2026 Catatan Pelajaran SDLC. Dibuat untuk pembelajaran. Deploy ke GitHub Pages + Google Apps Script.</p>
+      <p class="footer-note">Password admin & API key disimpan di Script Properties Apps Script — tidak ada rahasia di repositori GitHub.</p>
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

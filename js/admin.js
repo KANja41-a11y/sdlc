@@ -75,6 +75,34 @@
   function showAdminPanel() {
     document.getElementById("adminLogin").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
+
+    // Tampilkan status backend
+    let statusEl = document.getElementById("backendStatus");
+    if (!statusEl) {
+      const header = document.querySelector(".admin-header");
+      if (header) {
+        statusEl = document.createElement("div");
+        statusEl.id = "backendStatus";
+        statusEl.style.cssText = "font-size:0.85rem;margin-top:0.5rem;";
+        header.parentNode.insertBefore(statusEl, header.nextSibling);
+      }
+    }
+    if (statusEl) {
+      const backendOn =
+        CONFIG.USE_BACKEND &&
+        CONFIG.APPS_SCRIPT_URL &&
+        CONFIG.APPS_SCRIPT_URL.includes("script.google.com") &&
+        adminToken &&
+        !String(adminToken).startsWith("demo-token-");
+
+      if (backendOn) {
+        statusEl.innerHTML =
+          '<span style="color:#059669;font-weight:600;">● Backend aktif</span> — perubahan akan disimpan permanen ke Google Sheet.';
+      } else {
+        statusEl.innerHTML =
+          '<span style="color:#d97706;font-weight:600;">● Mode sesi saja</span> — aktifkan Apps Script di <code>js/config.js</code> agar data tersimpan permanen.';
+      }
+    }
   }
 
   function setupTabs() {
@@ -320,61 +348,94 @@
     document.getElementById("modalClose")?.addEventListener("click", closeModal);
     document.getElementById("modalCancel")?.addEventListener("click", closeModal);
 
-    document.getElementById("crudForm")?.addEventListener("submit", (e) => {
+    document.getElementById("crudForm")?.addEventListener("submit", async (e) => {
       e.preventDefault();
       const type = document.getElementById("crudType").value;
       const id = document.getElementById("crudId").value;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Menyimpan...";
+      }
 
-      if (type === "stage") {
-        const stage = SDLC_DATA.stages.find((s) => "stage-" + s.id === id);
-        if (stage) {
-          stage.title = document.getElementById("f_title").value;
-          stage.description = document.getElementById("f_desc").value;
-          stage.mindMap = document.getElementById("f_mind").value;
-        }
-      } else if (type === "role") {
-        const role = SDLC_DATA.roles.find((r) => "role-" + r.id === id);
-        if (role) {
-          role.name = document.getElementById("f_title").value;
-          role.shortDesc = document.getElementById("f_desc").value;
-        }
-      } else if (type === "quiz") {
-        const question = document.getElementById("f_question").value;
-        const options = [
-          document.getElementById("f_opt0").value,
-          document.getElementById("f_opt1").value,
-          document.getElementById("f_opt2").value,
-          document.getElementById("f_opt3").value
-        ];
-        const correct = parseInt(document.getElementById("f_correct").value, 10);
-        const explanation = document.getElementById("f_expl").value;
-
-        if (id) {
-          const q = SDLC_DATA.quizzes.find((x) => x.id === parseInt(id, 10));
-          if (q) {
-            q.question = question;
-            q.options = options;
-            q.correct = correct;
-            q.explanation = explanation;
+      try {
+        if (type === "stage") {
+          const stage = SDLC_DATA.stages.find((s) => "stage-" + s.id === id);
+          if (stage) {
+            stage.title = document.getElementById("f_title").value;
+            stage.description = document.getElementById("f_desc").value;
+            stage.mindMap = document.getElementById("f_mind").value;
           }
-        } else {
-          const newId = SDLC_DATA.quizzes.reduce((m, q) => Math.max(m, q.id), 0) + 1;
-          SDLC_DATA.quizzes.push({ id: newId, question, options, correct, explanation });
-        }
-        renderQuizTable();
-        syncQuizToBackend();
-      }
+          // Re-render stage detail if currently shown
+          if (window.SDLC_APP && typeof window.SDLC_APP.refreshStages === "function") {
+            window.SDLC_APP.refreshStages();
+          }
+        } else if (type === "role") {
+          const role = SDLC_DATA.roles.find((r) => "role-" + r.id === id);
+          if (role) {
+            role.name = document.getElementById("f_title").value;
+            role.shortDesc = document.getElementById("f_desc").value;
+          }
+          if (window.SDLC_APP && typeof window.SDLC_APP.refreshRoles === "function") {
+            window.SDLC_APP.refreshRoles();
+          }
+        } else if (type === "quiz") {
+          const question = document.getElementById("f_question").value;
+          const options = [
+            document.getElementById("f_opt0").value,
+            document.getElementById("f_opt1").value,
+            document.getElementById("f_opt2").value,
+            document.getElementById("f_opt3").value
+          ];
+          const correct = parseInt(document.getElementById("f_correct").value, 10);
+          const explanation = document.getElementById("f_expl").value;
 
-      // Re-render public views
-      if (type === "stage") {
-        // re-render stages if needed
-        const container = document.getElementById("timelineContainer");
-        if (container) {
-          // simple refresh by re-calling if exposed
+          if (id) {
+            const q = SDLC_DATA.quizzes.find((x) => x.id === parseInt(id, 10));
+            if (q) {
+              q.question = question;
+              q.options = options;
+              q.correct = correct;
+              q.explanation = explanation;
+            }
+          } else {
+            const newId = SDLC_DATA.quizzes.reduce((m, q) => Math.max(m, q.id), 0) + 1;
+            SDLC_DATA.quizzes.push({ id: newId, question, options, correct, explanation });
+          }
+          renderQuizTable();
+        }
+
+        // Coba simpan ke backend jika aktif
+        const saved = await persistToBackend(type);
+        closeModal();
+
+        if (saved === true) {
+          alert("✅ Perubahan berhasil disimpan permanen ke Google Sheet.");
+        } else if (saved === "no-backend") {
+          alert(
+            "⚠️ Perubahan disimpan di sesi browser ini saja.\n\n" +
+            "Agar permanen, aktifkan backend:\n" +
+            "1. Deploy Apps Script (lihat README)\n" +
+            "2. Isi APPS_SCRIPT_URL di js/config.js\n" +
+            "3. Set USE_BACKEND = true\n" +
+            "Lalu login admin lagi dan simpan ulang."
+          );
+        } else {
+          alert(
+            "⚠️ Perubahan tersimpan di sesi ini, tapi gagal sync ke server.\n" +
+            "Periksa koneksi / URL Apps Script / token login.\n\n" +
+            "Detail: " + (saved || "unknown error")
+          );
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Terjadi error saat menyimpan: " + (err.message || err));
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Simpan";
         }
       }
-      closeModal();
-      alert("Perubahan disimpan di sesi ini. Untuk persist permanen, aktifkan backend Apps Script atau commit perubahan ke data.js.");
     });
   }
 
@@ -382,20 +443,64 @@
     document.getElementById("crudModal").style.display = "none";
   }
 
-  async function syncQuizToBackend() {
-    if (!CONFIG.USE_BACKEND || !adminToken) return;
+  /**
+   * Simpan data ke Google Sheet via Apps Script.
+   * Return: true = sukses, "no-backend" = backend belum aktif, string = pesan error
+   */
+  async function persistToBackend(type) {
+    if (!CONFIG.USE_BACKEND || !CONFIG.APPS_SCRIPT_URL || !CONFIG.APPS_SCRIPT_URL.includes("script.google.com")) {
+      return "no-backend";
+    }
+    if (!adminToken || String(adminToken).startsWith("demo-token-")) {
+      return "no-backend";
+    }
+
     try {
-      await fetch(CONFIG.APPS_SCRIPT_URL, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain" },
-        body: JSON.stringify({
-          action: "saveQuizzes",
-          token: adminToken,
-          quizzes: SDLC_DATA.quizzes
-        })
-      });
+      if (type === "quiz") {
+        const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            action: "saveQuizzes",
+            token: adminToken,
+            quizzes: SDLC_DATA.quizzes
+          })
+        });
+        const data = await res.json();
+        if (data.success) return true;
+        return data.message || "Gagal menyimpan soal";
+      }
+
+      // Simpan tahapan & peran sebagai content snapshot
+      if (type === "stage" || type === "role") {
+        const res = await fetch(CONFIG.APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({
+            action: "saveContent",
+            token: adminToken,
+            stages: SDLC_DATA.stages,
+            roles: SDLC_DATA.roles
+          })
+        });
+        const data = await res.json();
+        if (data.success) return true;
+        return data.message || "Gagal menyimpan konten";
+      }
+
+      return true;
     } catch (e) {
-      console.warn("Sync quiz gagal", e);
+      console.warn("persistToBackend error", e);
+      return e.message || "Network error";
+    }
+  }
+
+  async function syncQuizToBackend() {
+    const result = await persistToBackend("quiz");
+    if (result === true) {
+      // silent success
+    } else if (result !== "no-backend") {
+      console.warn("Sync quiz gagal:", result);
     }
   }
 

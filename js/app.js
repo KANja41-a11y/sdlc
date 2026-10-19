@@ -371,6 +371,48 @@
   // Expose for admin
   window.SDLC_APP = {
     getData: () => SDLC_DATA,
-    logVisitor
+    logVisitor,
+    refreshStages: renderStages,
+    refreshRoles: renderRoles
   };
+
+  // Opsional: muat data dari backend jika aktif
+  async function loadFromBackendIfAvailable() {
+    if (!CONFIG.USE_BACKEND || !CONFIG.APPS_SCRIPT_URL || !CONFIG.APPS_SCRIPT_URL.includes("script.google.com")) {
+      return;
+    }
+    try {
+      const resQ = await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "getQuizzes" })
+      });
+      const dataQ = await resQ.json();
+      if (dataQ.success && dataQ.quizzes && dataQ.quizzes.length > 0) {
+        SDLC_DATA.quizzes = dataQ.quizzes;
+      }
+
+      const resC = await fetch(CONFIG.APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "getContent" })
+      });
+      const dataC = await resC.json();
+      if (dataC.success) {
+        if (dataC.stages && dataC.stages.length > 0) {
+          SDLC_DATA.stages = dataC.stages;
+          renderStages();
+          renderTasks();
+        }
+        if (dataC.roles && dataC.roles.length > 0) {
+          SDLC_DATA.roles = dataC.roles;
+          renderRoles();
+        }
+      }
+    } catch (e) {
+      console.warn("Gagal memuat data dari backend, pakai data lokal.", e);
+    }
+  }
+
+  loadFromBackendIfAvailable();
 })();

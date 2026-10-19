@@ -156,6 +156,10 @@ function doPost(e) {
         return handleSaveQuizzes(body, ss);
       case "getQuizzes":
         return handleGetQuizzes(ss);
+      case "saveContent":
+        return handleSaveContent(body, ss);
+      case "getContent":
+        return handleGetContent(ss);
       default:
         return respond({ success: false, message: "Unknown action: " + action });
     }
@@ -349,4 +353,78 @@ function handleGetQuizzes(ss) {
     });
   }
   return respond({ success: true, quizzes: quizzes });
+}
+
+/**
+ * Simpan konten tahapan & peran (snapshot JSON)
+ * Sheet Content: ID | Type | Title | DataJSON | UpdatedAt
+ */
+function handleSaveContent(body, ss) {
+  if (!isValidToken(body.token)) {
+    return respond({ success: false, message: "Token tidak valid atau expired. Login ulang." });
+  }
+
+  const sh = ss.getSheetByName(SHEETS.CONTENT);
+  // Clear existing (keep header)
+  if (sh.getLastRow() > 1) {
+    sh.getRange(2, 1, sh.getLastRow() - 1, sh.getLastColumn()).clearContent();
+  }
+
+  const now = new Date().toISOString();
+  const stages = body.stages || [];
+  const roles = body.roles || [];
+
+  stages.forEach(function (s) {
+    sh.appendRow([
+      "stage-" + s.id,
+      "stage",
+      s.title || "",
+      JSON.stringify(s),
+      now
+    ]);
+  });
+
+  roles.forEach(function (r) {
+    sh.appendRow([
+      "role-" + r.id,
+      "role",
+      r.name || "",
+      JSON.stringify(r),
+      now
+    ]);
+  });
+
+  return respond({
+    success: true,
+    stages: stages.length,
+    roles: roles.length
+  });
+}
+
+/**
+ * Ambil konten yang tersimpan (untuk override data default frontend)
+ */
+function handleGetContent(ss) {
+  const sh = ss.getSheetByName(SHEETS.CONTENT);
+  const data = sh.getDataRange().getValues();
+  const stages = [];
+  const roles = [];
+
+  for (let i = 1; i < data.length; i++) {
+    const r = data[i];
+    if (!r[3]) continue;
+    try {
+      const obj = JSON.parse(r[3]);
+      if (r[1] === "stage") stages.push(obj);
+      else if (r[1] === "role") roles.push(obj);
+    } catch (e) {
+      // skip invalid JSON
+    }
+  }
+
+  return respond({
+    success: true,
+    stages: stages,
+    roles: roles
+  });
 }

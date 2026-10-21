@@ -12,7 +12,7 @@
  */
 const CONFIG = {
   // URL Web App Apps Script Anda
-  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbwme9FJ9YQmmBwFe50qN_5ic7hiZ1gfi0EJvcr65ymW3UNAzsT8ljPJs9Mcq5-e1dQlMg/exec",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbz1KadFpTo0RW_EqAlXjThCBedCD3sPJuZ_bHRzF5WFbXkjdtc8wRlLadDtDQcsobHFiA/exec",
 
   // true = simpan ke Google Sheet | false = hanya sesi browser
   USE_BACKEND: true,
